@@ -1,0 +1,6 @@
+<form action="http://127.0.0.1:8000/tasks/", method="post">
+    {% csrf_token %}
+    <label>Title</label><input type="text" name="titleKey"><br>
+    <label>Description</label><input type="text" name="descriptionKey"><br>
+    <input type="submit" value="Save">
+</form>
