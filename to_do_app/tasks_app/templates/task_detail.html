@@ -1,0 +1,11 @@
+<h3>Task</h3>
+<div><b>Title</b> {{ task.title }} </div>
+<div><b>Is_done</b> {{ task.is_done }} </div>
+<div><b>done_date</b> {{ task.done_date }} </div>
+<div><b>create_at</b> {{ task.create_at }} </div>
+<div><b>update_at</b> {{ task.update_at }} </div>
+<div><b>description</b> {{ task.description }} </div>
+<form action="http://127.0.0.1:8000/tasks/{{ task.id }}/delete", method="post">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+</form>
