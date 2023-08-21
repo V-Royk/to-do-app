@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from django.http.response import JsonResponse, HttpResponseBadRequest
 from tasks_app.models import Task
 from django.views.decorators.csrf import csrf_exempt
@@ -5,40 +6,26 @@ from django.shortcuts import  get_object_or_404
 
 import json
 
-"""
-2xx - успешный запрос
-3xx - редирект
-4хх - ошибка со стороны клиента
-5хх - ошибка на стороне сервера
-"""
 
-
-def test_view(request):
-    response_content = {
-        "data": [
-            {
-                "success" : 200,
-                "method": "test",
-                "content": "None"
+def task_list(request: HttpRequest) -> JsonResponse|HttpResponseBadRequest:
+    if request.method == "GET":
+        tasks = Task.objects.all()
+        new_list = []
+        for task in tasks:
+            new_task = {
+                "title": task.title,
+                "is_done": task.is_done,
+                "done_date": task.done_date,
+                "create_at": task.create_at,
+                "update_at": task.update_at,
+                "description": task.description,
             }
-        ]
-    }
-    return JsonResponse(data=response_content)
-
-def task_list(request):
-    tasks = Task.objects.all()
-    new_list = []
-    for task in tasks:
-        new_task = {
-            "title": task.title,
-            "is_done": task.is_done,
-            "done_date": task.done_date,
-            "create_at": task.create_at,
-            "update_at": task.update_at,
-            "description": task.description,
-        }
-        new_list.append(new_task)
-    return JsonResponse(data={'tasks': new_list})
+            new_list.append(new_task)
+        return JsonResponse(data={'tasks': new_list})
+    
+    return HttpResponseBadRequest(content={
+        "error": "invalid method",
+    })
 
 
 @csrf_exempt
@@ -46,20 +33,11 @@ def task_create(request):
     body = json.loads(request.body)
     title = body.get("title")
     description = body.get("description")
-    task = Task.objects.create(title=title, description=description)
-
+    Task.objects.create(title=title, description=description)
     return JsonResponse(data={
         "success": True
     })
 
-    # return JsonResponse(data={
-    #     "title": task.title,
-    #     "is_done": task.is_done,
-    #     "done_date": task.done_date,
-    #     "create_at": task.create_at,
-    #     "update_at": task.update_at,
-    #     "description": task.description,
-    # })
 
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
