@@ -3,6 +3,8 @@ from .models import Task
 from django.utils.timezone import now
 from django.http.response import HttpResponse
 
+
+
 from pprint import pprint
 
 
@@ -81,6 +83,8 @@ def get_create_form(request):
 def get_update_form(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'update_form.html', {'task': task})
+
+
 
 
 

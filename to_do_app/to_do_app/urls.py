@@ -32,4 +32,5 @@ tasks/id - PUT обновление задачи
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('tasks_app.urls')),
+    path('api/', include('tasks_app.api_urls')),
 ]
