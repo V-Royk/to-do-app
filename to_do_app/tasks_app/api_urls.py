@@ -1,11 +1,15 @@
-from tasks_app.api_views import test_view, task_list, task_create, task_detail, task_update, task_delete
+from tasks_app.api_views import handle_task, handle_tasks
 from django.urls import path
 
+# tasks/ - GET получние списка задач
+# tasks/create - GET получение формы для создания задачи
+# tasks/id/update - GET получение формы для обновления задчи
+# tasks/id - GET деталка задачи
+# tasks/ - POST cоздание задач
+# tasks/id - DELETE удаление задачи
+# tasks/id - PUT обновление задачи
+
 urlpatterns = [
-    path('test', test_view),
-    path('tasks', task_list),
-    path('create', task_create),
-    path('detail/<int:pk>', task_detail),
-    path('update/<int:pk>', task_update),
-    path('delete/<int:pk>', task_delete),
+    path('tasks', handle_tasks),
+    path('tasks/<int:pk>', handle_task),
 ]
