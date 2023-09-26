@@ -3,6 +3,8 @@ from django.http.response import JsonResponse, HttpResponseBadRequest
 from tasks_app.models import Task
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import  get_object_or_404
+from django.db import IntegrityError 
+from django.http.response import HttpResponseNotFound
 
 import json
 
@@ -26,6 +28,8 @@ def handle_task(
             return task_detail(request, pk)
         case "PUT":
             return task_update(request, pk)
+        case "PATCH":
+            return done_task(request, pk)
         case "DELETE":
             return task_delete(request, pk)
 
@@ -82,7 +86,13 @@ def task_detail(
     pk: int
 ) -> JsonResponse|HttpResponseBadRequest:
     if (request.method == "GET"):
-        task = get_object_or_404(Task, pk=pk)
+
+        try:
+            task = Task.objects.filter(id=pk)[0]
+        except IndexError:
+            return HttpResponseNotFound()
+
+        # task = get_object_or_404(Task, pk=pk)
         return JsonResponse(data={
             "title": task.title,
             "is_done": task.is_done,
@@ -131,6 +141,36 @@ def task_delete(
         return JsonResponse({"message": "Задача удалена"})
     else:
         return HttpResponseBadRequest()
+
+def done_task(
+    request: HttpRequest, 
+    pk: int
+) -> JsonResponse|HttpResponseBadRequest:
+    """
+    1. Запрос клиента
+    2. Парсинг json (превращение строки в словарь)
+    3. Проставляем значение из json
+    4. Возвращаем ответ
+    """
+
+    if request.method == "PATCH":
+        task = get_object_or_404(Task, pk=pk)
+        data = json.loads(request.body)
+        task.is_done = data.get('is_done', task.is_done)
+        task.save()
+        return JsonResponse({'success': True})
+    else:
+        return HttpResponseBadRequest()
+
+        
+
+
+
+        
+        
+        
+
+
 
     
 
